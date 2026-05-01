@@ -1,21 +1,32 @@
-local b = game:HttpGet("https://raw.githubusercontent.com/CaughtUsV2/AuditKit/master/bundle.b64")
-if not b or #b < 100 then warn("[CaughtUs] fetch failed") return end
-local lut = {}
-local chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
-for i = 1, #chars do lut[chars:byte(i)] = i - 1 end
+local d = game:HttpGet("https://raw.githubusercontent.com/CaughtUsV2/AuditKit/master/bundle.enc")
+if not d or #d < 100 then return end
+local cs = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#%()*+,-./:;<=>?@[]^_{|}~"
+local cl = {} for i = 1, #cs do cl[cs:sub(i,i)] = i - 1 end
+local base = #cs
+local bc = tonumber(d:sub(1,8), 16)
+local buf = {}
+local j = 9
+while j + 2 <= #d do
+    local v3 = cl[d:sub(j,j)] or 0
+    local v2 = cl[d:sub(j+1,j+1)] or 0
+    local v1 = cl[d:sub(j+2,j+2)] or 0
+    local val = v3 * base * base + v2 * base + v1
+    buf[#buf+1] = math.floor(val / 256)
+    buf[#buf+1] = val % 256
+    j = j + 3
+end
+if j + 1 <= #d then
+    local v2 = cl[d:sub(j,j)] or 0
+    local v1 = cl[d:sub(j+1,j+1)] or 0
+    buf[#buf+1] = v2 * base + v1
+end
+while #buf > bc do buf[#buf] = nil end
+for i = 1, #buf do buf[i] = (buf[i] - 37 - ((i-1) % 13)) % 256 end
+local k = {67,97,117,103,104,116,85,115,50,48,50,54,120,75,57,109}
 local out = {}
-local val, bits = 0, 0
-for i = 1, #b do
-    local v = lut[b:byte(i)]
-    if v then
-        val = (val * 64 + v) % 16777216
-        bits = bits + 6
-        if bits >= 8 then
-            bits = bits - 8
-            local shift = 2^bits
-            out[#out+1] = string.char(math.floor(val / shift) % 256)
-            val = val % shift
-        end
-    end
+for i = 1, #buf do
+    local x = k[((i-1) % 16) + 1]
+    if bit32 then out[i] = string.char(bit32.bxor(buf[i], x))
+    else out[i] = string.char(buf[i] ~ x) end
 end
 loadstring(table.concat(out))()
