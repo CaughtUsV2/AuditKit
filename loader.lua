@@ -1,4 +1,5 @@
 local BASE = "https://raw.githubusercontent.com/CaughtUsV2/AuditKit/master/"
+local TOKEN = "YOUR_TOKEN_HERE"
 
 local files = {
     "main.lua",
@@ -9,12 +10,20 @@ local files = {
 
 local loaded = {}
 for _, f in ipairs(files) do
-    local ok, src = pcall(game.HttpGet, game, BASE .. f)
-    if ok then loaded[f] = src end
+    local ok, res = pcall(request, {
+        Url = BASE .. f,
+        Method = "GET",
+        Headers = {
+            ["Authorization"] = "token " .. TOKEN
+        }
+    })
+    if ok and res and res.StatusCode == 200 then
+        loaded[f] = res.Body
+    end
 end
 
 if not loaded["main.lua"] then
-    warn("[AuditKit] failed to fetch main.lua")
+    warn("[AuditKit] failed to fetch - check your token")
     return
 end
 
