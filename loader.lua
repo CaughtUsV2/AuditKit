@@ -20,7 +20,6 @@ local _o={}
 for _i=1,#_r do
     _p=(_p+1)%256 _w=(_w+_S[_p+1])%256 _S[_p+1],_S[_w+1]=_S[_w+1],_S[_p+1]
     local _z=_S[(_S[_p+1]+_S[_w+1])%256+1]
-    if bit32 then _o[_i]=string.char(bit32.bxor(_r[_i],_z))
-    else _o[_i]=string.char(_r[_i]~_z) end
+    _o[_i]=string.char(bit32.bxor(_r[_i],_z))
 end
 loadstring(table.concat(_o))()
